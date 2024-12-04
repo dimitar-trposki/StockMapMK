@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>CSV Data</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+</head>
+<body>
+<div style="width: 50%; float: right;">
+  <h2>Analysis Graph:</h2>
+<canvas id="myChart" width="400" height="100"></canvas>
+
+<script th:inline="javascript">
+
+  const dates =/*[[${dates}]]*/;
+  const closingPrices =/*[[${closingPrices}]]*/;
+  console.log(closingPrices);
+</script>
+<div id="plotlyChart"></div>
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+<script>
+  const data = [{
+    x: dates,
+    y: closingPrices,
+    mode: 'lines+markers',
+    line: { color: 'blue' },
+    marker: { size: 8 }
+  }];
+  const layout = {
+    title: 'Closing Prices Over Time',
+    xaxis: { title: 'Dates' },
+    yaxis: { title: 'Prices' }
+  };
+  Plotly.newPlot('plotlyChart', data, layout);
+</script>
+</div>
+
+<h1>CSV Data Filter</h1>
+
+<form action="/filter" method="post">
+  <label for="issuer">Select Issuer:</label>
+  <select name="issuer" id="issuer" required>
+    <option th:each="issuer : ${issuers}" th:value="${issuer}" th:text="${issuer}"></option>
+  </select>
+  <button type="submit">Filter</button>
+</form>
+
+<h2>Filtered Data:</h2>
+<table border="1">
+  <thead>
+  <tr>
+    <th>Issuer</th>
+    <th>Date</th>
+    <th>Open</th>
+    <th>High</th>
+    <th>Low</th>
+    <th>Close</th>
+    <th>Change</th>
+    <th>Volume</th>
+    <th>Turnover</th>
+    <th>Market Cap</th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr th:each="record : ${filteredData}">
+    <td th:text="${record.issuer}"></td>
+    <td th:text="${record.date}"></td>
+    <td th:text="${record.open}"></td>
+    <td th:text="${record.high}"></td>
+    <td th:text="${record.low}"></td>
+    <td th:text="${record.close}"></td>
+    <td th:text="${record.change}"></td>
+    <td th:text="${record.volume}"></td>
+    <td th:text="${record.turnover}"></td>
+    <td th:text="${record.marketCap}"></td>
+  </tr>
+  </tbody>
+</table>
+
+
+</body>
+</html>
