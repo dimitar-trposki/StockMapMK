@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>CSV Data</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        /* Општи поставувања */
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #1A1B25;
+            color: white;
+        }
+
+        h1, h2 {
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 3rem;
+            margin-top: 20px;
+        }
+
+        h2 {
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 60px;
+            background-color: #1A1B25;
+            color: #FFFFFF;
+            width: 100%; /* Зафаќа целата ширина на страницата */
+            box-sizing: border-box; /* Вклучува padding во ширината */
+            position: fixed; /* Фиксира го на врвот на страницата */
+            top: 0; /* Поставете го на врвот */
+            left: 0; /* За да започне од левиот раб */
+            z-index: 1000; /* Осигурајте дека е над другите елементи */
+        }
+
+        nav {
+            display: flex;
+            gap: 30px; /* Растојание помеѓу линковите */
+            flex-grow: 1; /* Дозволува навбарот да се протега */
+            justify-content: flex-end; /* Ги поставува линковите десно */
+        }
+
+        nav a {
+            text-decoration: none;
+            color: #FFFFFF;
+            font-weight: bold;
+            font-size: 20px; /* Големина на текстот */
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            font-size: 36px; /* Зголемена големина на логото */
+            font-weight: bold;
+        }
+
+        .logo span {
+            color: red;
+            font-size: 36px; /* Зголемена големина на симболот */
+            margin-right: 10px;
+        }
+
+        nav a:hover {
+            color: red;
+        }
+
+        /* Стил за копчињата над графикот */
+        .chart-links {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+            gap: 30px;
+        }
+
+        .chart-links a {
+            text-decoration: none;
+            padding: 10px 20px;
+            background-color: #EE4B2B;
+            color: white;
+            font-size: 1.2rem;
+            font-weight: bold;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+
+        .chart-links a:hover {
+            background-color: #FF6347;
+        }
+
+        main {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: flex-start;
+            padding: 30px;
+            gap: 40px;
+        }
+
+        main .left-panel {
+            width: 100%;
+            max-height: 700px;
+            overflow-y: auto;
+            margin-top: 75px;
+        }
+
+        main .left-panel table {
+            height: auto;
+            min-height: 400px;
+            margin-top: 10px;
+            width: 100%;
+            border-collapse: collapse;
+            table-layout: fixed;
+        }
+
+        main .left-panel table thead th,
+        main .left-panel table tbody td {
+            width: 70px;
+            padding: 10px;
+            text-align: left;
+            border: 1px solid #444;
+        }
+
+        main .left-panel table thead th {
+            position: sticky;
+            top: 0;
+            background-color: #EE4B2B;
+            z-index: 1;
+            width: 70px;
+        }
+
+        main .right-panel {
+            width: 50%;
+            margin-top: 70px;
+            text-align: center;
+        }
+
+        table {
+            width: 100%;
+            table-layout: fixed;
+            border-collapse: collapse;
+        }
+
+        table thead th, table tbody td {
+            width: auto;
+            padding: 10px;
+            text-align: left;
+            border: 1px solid #444;
+        }
+
+        table tbody tr:hover {
+            background-color: #444;
+        }
+
+        form {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 20px;
+        }
+
+        form label {
+            margin-right: 10px;
+        }
+
+        form select {
+            padding: 5px;
+            font-size: 1rem;
+            margin-right: 10px;
+        }
+
+        form button {
+            background-color: #EE4B2B;
+            color: white;
+            border: none;
+            padding: 5px 15px;
+            font-size: 1rem;
+            cursor: pointer;
+        }
+
+        form button:hover {
+            background-color: #FF6347;
+        }
+
+        #plotlyChart {
+            width: 100%;
+            height: 400px;
+        }
+
+        /* Responsive стилови */
+        @media (max-width: 768px) {
+            main {
+                flex-direction: column;
+                align-items: center;
+                gap: 30px;
+            }
+
+            main .left-panel, main .right-panel {
+                width: 100%;
+            }
+
+            table thead th, table tbody td {
+                font-size: 0.9rem;
+            }
+
+            table {
+                width: 60%;
+                margin: 0 auto;
+                border-collapse: collapse;
+                margin-top: 20px;
+                max-width: 600px;
+            }
+
+            table thead th, table tbody td {
+                padding: 6px;
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+
+</head>
+<body>
+<div style="width: 50%; float: right; margin-top: 9%">
+
+    <!-- Копчињата над графикот -->
+    <div class="chart-links">
+        <a href="/technical-analysis">Technical analysis</a>
+        <a href="/analyze">Sentiment analysis</a>
+        <a href="/lstm-prediction">LSTM prediction</a>
+    </div>
+
+    <canvas id="myChart" width="400" height="100"></canvas>
+
+    <script th:inline="javascript">
+        const dates =/*[[${dates}]]*/;
+        const closingPrices =/*[[${closingPrices}]]*/;
+        console.log(closingPrices);
+    </script>
+    <div id="plotlyChart"></div>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <script>
+        const data = [{
+            x: dates,
+            y: closingPrices,
+            mode: 'lines+markers',
+            line: {color: 'blue'},
+            marker: {size: 8}
+        }];
+        const layout = {
+            title: 'Closing Prices Over Time',
+            xaxis: {title: 'Dates'},
+            yaxis: {title: 'Prices'}
+        };
+        Plotly.newPlot('plotlyChart', data, layout);
+    </script>
+</div>
+
+<header>
+    <div class="logo">
+        <span>*</span>STOCKMAPMK
+    </div>
+    <nav>
+        <a href="/home">Home</a>
+        <a href="/">Stocks</a>
+        <a href="/aboutUs">About us</a>
+    </nav>
+</header>
+
+<main>
+    <div class="left-panel" style="margin-top: 20%">
+        <h1>STOCK MARKET</h1>
+        <form action="/filter" method="post">
+            <label for="issuer">Choose issuer:</label>
+            <select name="issuer" id="issuer" required>
+                <option th:each="issuer : ${issuers}" th:value="${issuer}" th:text="${issuer}"></option>
+            </select>
+            <button type="submit">Submit</button>
+        </form>
+        <div style="overflow-y: auto; max-height: 400px;">
+            <table>
+                <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Open</th>
+                    <th>High</th>
+                    <th>Low</th>
+                    <th>Close</th>
+                    <th>Change</th>
+                    <th>Volume</th>
+                    <th>Turnover</th>
+                    <th>MarketCap</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="record : ${filteredData}">
+                    <td th:text="${record.date}"></td>
+                    <td th:text="${record.open}"></td>
+                    <td th:text="${record.high}"></td>
+                    <td th:text="${record.low}"></td>
+                    <td th:text="${record.close}"></td>
+                    <td th:text="${record.change}"></td>
+                    <td th:text="${record.volume}"></td>
+                    <td th:text="${record.turnover}"></td>
+                    <td th:text="${record.marketCap}"></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</main>
+</body>
+</html>
