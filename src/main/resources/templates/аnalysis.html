@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Technical Analysis</title>
+</head>
+<body>
+<h1>Technical Analysis for Issuer</h1>
+<form id="analysisForm">
+    <label for="issuer">Enter Issuer:</label>
+    <input type="text" id="issuer" name="issuer" required>
+    <button type="submit">Generate Charts</button>
+</form>
+<div id="charts">
+    <!-- Патеките до сликите ќе бидат прикажани тука -->
+    <div th:each="path : ${plotPaths}">
+        <img th:src="@{${path}}" alt="Chart">
+    </div>
+</div>
+
+<script>
+    document.getElementById('analysisForm').addEventListener('submit', function (event) {
+        event.preventDefault();
+        const issuer = document.getElementById('issuer').value;
+        fetch(`/analysis/generate?issuer=${issuer}`)
+            .then(response => response.json())
+            .then(data => {
+                const chartsDiv = document.getElementById('charts');
+                chartsDiv.innerHTML = ''; // Исчисти претходни графици
+                data.forEach(path => {
+                    const img = document.createElement('img');
+                    img.src = path;
+                    img.alt = 'Chart';
+                    chartsDiv.appendChild(img);
+                });
+            })
+            .catch(error => console.error('Error:', error));
+    });
+</script>
+</body>
+</html>
