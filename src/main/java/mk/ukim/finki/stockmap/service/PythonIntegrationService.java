@@ -13,18 +13,18 @@ public class PythonIntegrationService {
 
     public String generateTechnicalIndicators() {
         RestTemplate restTemplate = new RestTemplate();
-        // Повикај ја Flask апликацијата
+
         ResponseEntity<String> response = restTemplate.getForEntity(PYTHON_API_URL, String.class);
 
-        // Претвори го JSON одговорот во JsonNode за лесно да се обработи
+
         String responseBody = response.getBody();
 
         try {
-            // Парсирај го JSON одговорот
+
             JsonNode root = new ObjectMapper().readTree(responseBody);
             JsonNode plots = root.path("plots");
 
-            // Обработи патеките за графици (на пример, да ги прикажеш во интерфејсот)
+
             StringBuilder plotUrls = new StringBuilder();
             for (JsonNode plot : plots) {
                 plotUrls.append(plot.asText()).append("\n");

@@ -83,13 +83,13 @@ public class IssuerController {
 
     @PostMapping("/analyze")
     public String analyzeData(@RequestParam("issuer") String issuer, Model model) {
-        // Филтрирање на податоците за избраниот issuer
+
         List<CsvData> filteredData = allData.stream()
                 .filter(data -> data.getIssuer().equals(issuer))
                 .collect(Collectors.toList());
 
 
-        // Повик на Python скрипт за анализа
+
         try {
             ProcessBuilder processBuilder = new ProcessBuilder(
                     "python", "./technical_analysis.py"
@@ -109,7 +109,7 @@ public class IssuerController {
             e.printStackTrace();
         }
 
-        // Вчитување на резултатите од анализа (на пр. од CSV или JSON)
+
         List<String> indicators = readIndicatorsFromCsv("./technical_indicators.csv");
         model.addAttribute("indicators", indicators);
 

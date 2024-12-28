@@ -63,35 +63,3 @@ public class AnalysisController {
     }
 }
 
-/*
-@Controller
-@RequestMapping("/analysis")
-public class AnalysisController {
-
-    @GetMapping("/generate")
-    public String generateTechnicalIndicators(@RequestParam String issuer, Model model) {
-        List<String> plotPaths = new ArrayList<>();
-        try {
-            String scriptPath = "src/main/java/technical_analysis.py";
-            String csvPath = "src/main/java/stock_data.csv";
-
-            ProcessBuilder processBuilder = new ProcessBuilder("python", scriptPath, issuer, csvPath);
-            Process process = processBuilder.start();
-
-            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
-            String line;
-            while ((line = reader.readLine()) != null) {
-                plotPaths.add("/" + issuer + "_plots/" + line.trim());
-
-            }
-
-            process.waitFor();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        model.addAttribute("plotPaths", plotPaths);
-        return "technical";
-    }
-}
- */
