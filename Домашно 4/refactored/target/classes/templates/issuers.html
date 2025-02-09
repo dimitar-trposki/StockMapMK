@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="mk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Издавачи</title>
+</head>
+<body>
+<h1>Список на издавачи</h1>
+<ul>
+  <th:block th:each="issuer : ${issuers}">
+    <li th:text="${issuer}"></li>
+  </th:block>
+</ul>
+</body>
+</html>
